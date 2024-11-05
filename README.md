@@ -25,18 +25,18 @@ This repository contains a sentiment prediction web application that provides a 
 
 ## Project Structure
 
-.
-├── api.py               # Main Flask app for serving predictions via API
-├── EDA & Modeling.ipynb # Our Data Science workflow is inside 
-├── Data/
-|   ├── amazon_alexa.tsv #This is the data we train our model on
-├── Models/              # Folder containing model, scaler, and vectorizer files
-│   ├── model_xgb.pkl
-│   ├── scaler.pkl
-│   └── countVectorizer.pkl
-├── templates/
-│   └── landing.html     # HTML template for the Flask app's main page
-└── README.md            # Project documentation (you are here)
+
+├── api.py               # Main Flask app for serving predictions via API<br/> 
+├── EDA & Modeling.ipynb # Our Data Science workflow is inside<br/>
+├── Data/<br/>
+ |   ├── amazon_alexa.tsv #This is the data we train our model on<br/>
+├── Models/              # Folder containing model, scaler, and vectorizer files<br/>
+│   ├── model_xgb.pkl<br/>
+│   ├── scaler.pkl<br/>
+│   └── countVectorizer.pkl<br/>
+ ├── templates/<br/>
+│   └── landing.html     # HTML template for the Flask app's main page<br/>
+└── README.md            # Project documentation (you are here)<br/>
 
 ## Setup and Installation
 
