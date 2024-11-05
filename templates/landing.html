@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="shortcut icon" href="./assets/img/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="76x76" href="./assets/img/apple-icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/creativetimofficial/tailwind-starter-kit/compiled-tailwind.min.css" />
+  <title>Amazon Alexa Reviews Analysis</title>
+</head>
+
+<body class="text-gray-800 antialiased">
+  <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
+
+  <main>
+    <div class="relative pt-16 pb-32 flex content-center items-center justify-center min-h-screen">
+      <div class="absolute top-0 w-full h-full bg-center bg-cover"
+        style="background-image: linear-gradient(135deg, #3A6073 0%, #16222A 100%);">
+        <span id="blackOverlay" class="w-full h-full absolute opacity-50 bg-black"></span>
+      </div>
+      <div class="container relative mx-auto text-center">
+        <div class="flex flex-wrap items-center justify-center">
+          <div class="w-full lg:w-8/12 px-4">
+            <div class="pr-12">
+              <h1 class="text-white font-semibold text-5xl">
+                Uncover Emotions Behind Your Words 🌟
+              </h1>
+              <p class="mt-6 text-lg text-gray-300 leading-relaxed">
+                Use sentiment prediction to understand emotions and opinions in your text data. Leverage these insights
+                to enhance customer experiences and drive business growth.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="absolute bottom-0 left-0 right-0 w-full overflow-hidden" style="height: 50px;">
+        <svg class="absolute bottom-0" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 2560 100"
+          x="0" y="0">
+          <polygon class="text-gray-300 fill-current" points="2560 0 2560 100 0 100"></polygon>
+        </svg>
+      </div>
+    </div>
+
+    <section class="relative py-20 bg-gray-100">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-wrap items-center justify-center">
+          <div class="w-full md:w-6/12 lg:w-4/12 px-4 mb-6">
+            <div class="bg-white shadow-lg rounded-lg p-6">
+              <h2 class="text-2xl font-bold text-center text-gray-700 mb-4">Text Sentiment Prediction</h2>
+              <form id="predictionForm">
+                <div class="mb-4">
+                  <label for="csvFileInput" class="block text-gray-600 text-sm font-bold mb-2">Upload your CSV file</label>
+                  <input type="file" id="csvFileInput" accept=".csv"
+                    class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-indigo-500" />
+                </div>
+                <div class="mb-4">
+                  <label for="textInput" class="block text-gray-600 text-sm font-bold mb-2">Text for Prediction</label>
+                  <textarea id="textInput" placeholder="Enter text here..." rows="3"
+                    class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-indigo-500"></textarea>
+                </div>
+                <button type="button" onclick="predict()"
+                  class="w-full mt-4 bg-indigo-600 text-white font-semibold py-2 rounded-lg shadow hover:bg-indigo-700">
+                  Predict
+                </button>
+              </form>
+            </div>
+          </div>
+          <div class="w-full md:w-6/12 lg:w-4/12 px-4">
+            <div class="bg-white shadow-lg rounded-lg p-6">
+              <h2 class="text-2xl font-bold text-center text-gray-700 mb-4">Prediction Result</h2>
+              <div id="predictionResult" class="text-lg text-gray-700 p-4 border rounded-lg bg-gray-50"></div>
+              <div class="mt-4">
+                <h2 class="text-2xl font-bold text-center text-gray-700 mb-4">Graph Result</h2>
+                <div id="graphContainer" class="p-4 border rounded-lg bg-gray-50"></div>
+              </div>
+              <button id="downloadBtn" style="display:none" onclick="downloadPredictions()"
+                class="w-full mt-4 bg-indigo-600 text-white font-semibold py-2 rounded-lg shadow hover:bg-indigo-700">
+                Download Predictions
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="relative bg-gray-900 pt-8 pb-6 text-center">
+    <div class="container mx-auto px-4">
+      <hr class="my-6 border-gray-400" />
+      <div class="text-sm text-white font-semibold py-1">
+        © 2024 Text Sentiment Prediction
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function predict() {
+      // Get the CSV file and text input elements
+      const csvFileInput = document.getElementById("csvFileInput");
+      const textInput = document.getElementById("textInput");
+      const predictionResult = document.getElementById("predictionResult");
+      const graphContainer = document.getElementById("graphContainer");
+
+      // If CSV file is uploaded, handle CSV file
+      if (csvFileInput.files.length > 0) {
+        const formData = new FormData();
+        formData.append("file", csvFileInput.files[0]);
+
+        fetch("/predict", { method: "POST", body: formData })
+          .then(response => {
+            if (response.headers.get('X-Graph-Exists') === 'true') {
+              const graphData = response.headers.get('X-Graph-Data');
+              displayGraph(graphData);
+            }
+            return response.blob();
+          })
+          .then(blob => {
+            document.getElementById("downloadBtn").style.display = "block";
+            document.getElementById("downloadBtn").onclick = function () {
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "Predictions.csv";
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            };
+          })
+          .catch(error => console.error("Error:", error));
+      } else if (textInput.value.trim() !== "") {
+        // Otherwise, predict on single text input
+        fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ "text": textInput.value.trim() })
+        })
+          .then(response => response.json())
+          .then(data => predictionResult.innerHTML = "Predicted sentiment: " + data.prediction)
+          .catch(error => console.error("Error:", error));
+      }
+    }
+
+    function displayGraph(graphData) {
+      const graphUrl = "data:image/png;base64," + graphData;
+      const img = document.createElement('img');
+      img.src = graphUrl;
+      graphContainer.innerHTML = '';
+      graphContainer.appendChild(img);
+    }
+  </script>
+
+</body>
+</html>

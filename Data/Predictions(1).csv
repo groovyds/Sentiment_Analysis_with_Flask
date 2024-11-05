@@ -1,0 +1,11 @@
+Sentence,Predicted sentiment
+"I love this product, it works great!",Positive
+This is the best purchase I've ever made.,Positive
+"Absolutely fantastic experience, highly recommend!",Positive
+I'm very happy with the results!,Positive
+The service was excellent and very satisfying.,Positive
+I didn't like this at all.,Positive
+This product is not worth the money.,Positive
+I'm really disappointed with my purchase.,Positive
+The quality is terrible and very frustrating.,Negative
+I would never buy this again.,Positive
